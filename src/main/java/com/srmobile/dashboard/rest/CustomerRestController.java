@@ -29,4 +29,8 @@ public class CustomerRestController {
     public Customer saveCustomer(@RequestBody Customer customer){
         return customerDAO.save(customer);
     }
+    @GetMapping("/customers/contact-number/{mobile}")
+    public Customer getCustomerByContactNumber(@PathVariable String mobile){
+        return customerDAO.findByContactNumber(mobile);
+    }
 }

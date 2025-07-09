@@ -33,4 +33,23 @@ public class CustomerDAOjpaImpl implements CustomerDAO{
     public Customer save(Customer customer) {
         return entityManager.merge(customer);
     }
+
+    @Override
+    public Customer findByContactNumber(String mobile) {
+        try {
+            // `contactNo` is the field name in the Customer entity
+            // change the JPQL property name if your entity uses a different one
+            TypedQuery<Customer> q = entityManager.createQuery(
+                    "FROM Customer c WHERE c.contactNo = :mobile",
+                    Customer.class
+            );
+            q.setParameter("mobile", mobile);
+            return q.getSingleResult();
+        } catch (jakarta.persistence.NoResultException ex) {
+            // no customer with that number → return null instead of throwing
+            return null;
+        }
+    }
+
+
 }

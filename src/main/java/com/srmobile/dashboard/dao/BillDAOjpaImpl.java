@@ -31,6 +31,55 @@ public class BillDAOjpaImpl implements BillDAO{
 
         return q.getSingleResult();
     }
+    private List<Bill> listRepairBillsBetween(LocalDate start, LocalDate endIncl) {
+        TypedQuery<Bill> q = entityManager.createQuery(
+                "FROM Bill b " +
+                        "WHERE b.repair IS NOT NULL " +          // ← only repairs
+                        "AND   b.billDate BETWEEN :start AND :end",
+                Bill.class
+        );
+        q.setParameter("start", start.atStartOfDay());
+        q.setParameter("end",   endIncl.plusDays(1).atStartOfDay());
+        return q.getResultList();
+    }
+
+    private List<Bill> listItemBillsBetween(LocalDate start, LocalDate endIncl) {
+        TypedQuery<Bill> q = entityManager.createQuery(
+                "FROM Bill b " +
+                        "WHERE b.item IS NOT NULL " +            // ← only items
+                        "AND   b.billDate BETWEEN :start AND :end",
+                Bill.class
+        );
+        q.setParameter("start", start.atStartOfDay());
+        q.setParameter("end",   endIncl.plusDays(1).atStartOfDay());
+        return q.getResultList();
+    }
+    private BigDecimal sumItemProfitBetween(LocalDate start, LocalDate endIncl) {
+        TypedQuery<BigDecimal> q = entityManager.createQuery(
+                "SELECT COALESCE(SUM(b.profit),0) " +
+                        "FROM   Bill b " +
+                        "WHERE  b.billDate BETWEEN :start AND :end " +
+                        "AND    b.item IS NOT NULL",
+                BigDecimal.class
+        );
+        q.setParameter("start", start.atStartOfDay());
+        q.setParameter("end",   endIncl.plusDays(1).atStartOfDay());
+        return q.getSingleResult();
+    }
+
+    private BigDecimal sumRepairProfitBetween(LocalDate start, LocalDate endIncl) {
+        TypedQuery<BigDecimal> q = entityManager.createQuery(
+                "SELECT COALESCE(SUM(b.profit),0) " +
+                        "FROM   Bill b " +
+                        "WHERE  b.billDate BETWEEN :start AND :end " +
+                        "AND    b.repair IS NOT NULL",
+                BigDecimal.class
+        );
+        q.setParameter("start", start.atStartOfDay());
+        q.setParameter("end",   endIncl.plusDays(1).atStartOfDay());
+        return q.getSingleResult();
+    }
+
 
     @Override
     @Transactional
@@ -81,6 +130,11 @@ public class BillDAOjpaImpl implements BillDAO{
         return profit7;
     }
 
+    private LocalDate[] windowWeek()  { return new LocalDate[]{ LocalDate.now().minusDays(6), LocalDate.now() }; }
+    private LocalDate[] windowMonth() { return new LocalDate[]{ LocalDate.now().minusDays(29), LocalDate.now() }; }
+    private LocalDate[] windowYear()  { return new LocalDate[]{ LocalDate.now().minusDays(364), LocalDate.now() }; }
+
+
     @Override
     public BigDecimal getLastWeekRevenue() {
         LocalDate today  = LocalDate.now();
@@ -103,5 +157,77 @@ public class BillDAOjpaImpl implements BillDAO{
         LocalDate start  = today.minusDays(364);
 
         return sumProfitBetween(start, today);
+    }
+
+    @Override
+    public List<Bill> getLastWeekRepairBills() {
+        LocalDate today = LocalDate.now();
+        return listRepairBillsBetween(today.minusDays(6), today);
+    }
+
+    @Override
+    public List<Bill> getLastMonthRepairBills() {
+        LocalDate today = LocalDate.now();
+        return listRepairBillsBetween(today.minusDays(29), today);
+    }
+
+    @Override
+    public List<Bill> getLastYearRepairBills() {
+        LocalDate today = LocalDate.now();
+        return listRepairBillsBetween(today.minusDays(364), today);
+    }
+
+    @Override
+    public List<Bill> getLastWeekItemsBills() {
+        LocalDate today = LocalDate.now();
+        return listItemBillsBetween(today.minusDays(6), today);
+    }
+
+    @Override
+    public List<Bill> getLastMonthItemsBills() {
+        LocalDate today = LocalDate.now();
+        return listItemBillsBetween(today.minusDays(29), today);
+    }
+
+    @Override
+    public List<Bill> getLastYearItemsBills() {
+        LocalDate today = LocalDate.now();
+        return listItemBillsBetween(today.minusDays(364), today);
+    }
+
+    @Override
+    public BigDecimal getLastWeekItemBillProfitTotal() {
+        LocalDate[] w = windowWeek();
+        return sumItemProfitBetween(w[0], w[1]);
+    }
+
+    @Override
+    public BigDecimal getLastMonthItemBillProfitTotal() {
+        LocalDate[] w = windowMonth();
+        return sumItemProfitBetween(w[0], w[1]);
+    }
+
+    @Override
+    public BigDecimal getLastYearItemBillProfitTotal() {
+        LocalDate[] w = windowYear();
+        return sumItemProfitBetween(w[0], w[1]);
+    }
+
+    @Override
+    public BigDecimal getLastWeekRepairBillProfitTotal() {
+        LocalDate[] w = windowWeek();
+        return sumRepairProfitBetween(w[0], w[1]);
+    }
+
+    @Override
+    public BigDecimal getLastMonthRepairBillProfitTotal() {
+        LocalDate[] w = windowMonth();
+        return sumRepairProfitBetween(w[0], w[1]);
+    }
+
+    @Override
+    public BigDecimal getLastYearRepairBillProfitTotal() {
+        LocalDate[] w = windowYear();
+        return sumRepairProfitBetween(w[0], w[1]);
     }
 }

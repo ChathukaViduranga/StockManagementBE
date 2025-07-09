@@ -13,4 +13,16 @@ public interface BillDAO {
     public BigDecimal getLastWeekRevenue();
     public BigDecimal getLastMonthRevenue();
     public BigDecimal getLastYearRevenue();
+    public List<Bill> getLastWeekRepairBills();
+    public List<Bill> getLastMonthRepairBills();
+    public List<Bill> getLastYearRepairBills();
+    public List<Bill> getLastWeekItemsBills();
+    public List<Bill> getLastMonthItemsBills();
+    public List<Bill> getLastYearItemsBills();
+    public BigDecimal getLastWeekItemBillProfitTotal();
+    public BigDecimal getLastMonthItemBillProfitTotal();
+    public BigDecimal getLastYearItemBillProfitTotal();
+    public BigDecimal getLastWeekRepairBillProfitTotal();
+    public BigDecimal getLastMonthRepairBillProfitTotal();
+    public BigDecimal getLastYearRepairBillProfitTotal();
 }

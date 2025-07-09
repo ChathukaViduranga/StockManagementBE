@@ -8,4 +8,5 @@ public interface CustomerDAO {
     List<Customer> findAll();
     Customer findById(Long id);
     Customer save(Customer customer);
+    Customer findByContactNumber(String mobile);
 }
