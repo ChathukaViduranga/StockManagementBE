@@ -10,4 +10,5 @@ public interface ItemsDAO {
     Items save(Items item);
     Items changeStatus(String id, Items.ItemStatus status);
     List<Items> findAvailable();
+    Items getAvailableItemById(String id);
 }

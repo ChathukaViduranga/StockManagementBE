@@ -2,6 +2,8 @@ package com.srmobile.dashboard.rest;
 
 import com.srmobile.dashboard.dao.ItemsDAO;
 import com.srmobile.dashboard.entity.Items;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +41,16 @@ public class ItemsRestController {
     @GetMapping("/items/available")
     public List<Items> getAvailableItems() {
         return itemsDAO.findAvailable();
+    }
+
+    @GetMapping("/items/available/{id}")
+    public ResponseEntity<?> getAvailableItemById(@PathVariable String id) {
+        Items item = itemsDAO.getAvailableItemById(id);
+        if (item == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No AVAILABLE item found for id: " + id);
+        }
+        return ResponseEntity.ok(item);
     }
 
 }

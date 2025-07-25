@@ -31,16 +31,31 @@ public class Items {
     @Enumerated(EnumType.STRING)
     private ItemStatus status = ItemStatus.AVAILABLE;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="category", nullable = false, length = 10)
+    private Category category = Category.O;
+
     public enum ItemStatus { AVAILABLE, OUT_OF_STOCK, DISCONTINUED }
 
+    public enum Category {
+        MP,
+        G,
+        S,
+        A,
+        V,
+        K,
+        P,
+        O,
+    }
     public Items(){}
 
-    public Items(String name, BigDecimal sellingPrice, BigDecimal cost, String description, String imagePath) {
+    public Items(String name, BigDecimal sellingPrice, BigDecimal cost, String description, String imagePath, Category category) {
         this.name = name;
         this.sellingPrice = sellingPrice;
         this.cost = cost;
         this.description = description;
         this.imagePath = imagePath;
+        this.category = category;
     }
 
     public Long getId() {
@@ -99,16 +114,26 @@ public class Items {
         this.status = status;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+
     @Override
     public String toString() {
         return "Items{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", sellingPrice=" + sellingPrice +
                 ", cost=" + cost +
                 ", description='" + description + '\'' +
                 ", imagePath='" + imagePath + '\'' +
                 ", status=" + status +
+                ", category=" + category +
                 '}';
     }
 }
